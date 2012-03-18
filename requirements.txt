@@ -1,0 +1,17 @@
+#
+# HTTP
+#
+requests
+
+
+#
+# Parsing
+#
+SUDS
+
+
+#
+# Testing
+#
+nose
+mock

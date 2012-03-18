@@ -1,0 +1,65 @@
+CodeSectionGetAll
+
+With no options...
+WebFault: Server raised fault: 'Server was unable to process request. ---> Object reference not set to an instance of an object.'
+
+With options...
+WebFault: Server raised fault: 'Server was unable to process request. ---> Value cannot be null.
+Parameter name: source'
+
+
+
+
+
+IndexCategoryGetAll
+
+With options...
+WebFault: Server raised fault: 'Server was unable to process request. ---> Value cannot be null.
+Parameter name: source'
+
+(because it requires a ParentID?)
+Even with a ParentID as the key or the guid of an index, same error.
+
+
+
+
+
+ItemSponsorsGetAll
+
+With seemingly valid ItemGUID...
+WebFault: Server raised fault: 'Server was unable to process request. ---> Input string was not in a correct format.
+
+
+
+
+
+MeetingGetAllForBody
+
+Doesn't appear to give me any
+
+
+
+
+
+ReportGetAll
+
+With or without options...
+WebFault: Server raised fault: 'Server was unable to process request. ---> Value cannot be null.
+Parameter name: source'
+
+
+
+
+
+RollCallGetExisting
+
+WebFault: Server raised fault: 'Server was unable to process request. ---> Sequence contains no elements'
+
+
+
+
+
+StreetGetAll
+
+WebFault: Server raised fault: 'Server was unable to process request. ---> Value cannot be null.
+Parameter name: source'
