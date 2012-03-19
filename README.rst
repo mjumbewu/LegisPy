@@ -1,16 +1,17 @@
 It is totally 3:24 AM and I am at SXSW lacking some essential facilities, but I
-am going to get this pumped out before the morning.
+am going to start getting this pumped out before the morning.
 
 =======
 LegisPy
 =======
 
-*LegisPy* is a friendly wrapper around the SOAP API for Granicus' Legistar leegislation management system.
+*LegisPy* is a friendly wrapper around the SOAP API for Granicus' Legistar
+leegislation management system.
 
-Inspired by the API work of @zachwills, a talented developer, and a friend, as
-well as the Ruby-language Granicus API.
+Inspired by the API work of @zachwills, a talented developer and a friend.
 
-*LegisPy* is built on top of the excellent `SUDS <https://fedorahosted.org/suds/>`_ client for SOAP services.
+*LegisPy* is built on top of the excellent `SUDS
+<https://fedorahosted.org/suds/>`_ client for SOAP services.
 
 Getting Started
 ===============
