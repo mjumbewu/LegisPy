@@ -32,20 +32,28 @@ Usage
     >>>
     >>> actions = api.actions()
     >>> print [action.name for action in actions]
-    [RECONSIDERED, VETO OVERRIDDEN, ADOPTED, ADOPTED & REFERRED, ADOPTED BY STANDING VOTE, AMENDED, blank, CALLED OUT OF COMMITTEE, Cancellation of Scheduled Public Hearing, DISAPPROVED, FAILED, FAVORABLY RECOMMENDED - RULES SUSPENDED; CONSIDERATION AT END OF CALENDAR, FAVORABLY RECOMMENDED AND ADOPTED, FAVORABLY RECOMMENDED; CONSIDERATION AT END OF CALENDAR, FAVORABLY RECOMMENDED; CONSIDERATION AT NEXT STATED COUNCIL MEETING, HEARING HELD, HEARING NOTICES SENT, Introduced, ...]
+    [RECONSIDERED, VETO OVERRIDDEN, ADOPTED, ADOPTED & REFERRED, ADOPTED BY
+    STANDING VOTE, AMENDED, blank, CALLED OUT OF COMMITTEE, Cancellation of
+    Scheduled Public Hearing, DISAPPROVED, FAILED, FAVORABLY RECOMMENDED - RULES
+    SUSPENDED; CONSIDERATION AT END OF CALENDAR, FAVORABLY RECOMMENDED AND
+    ADOPTED, FAVORABLY RECOMMENDED; CONSIDERATION AT END OF CALENDAR, FAVORABLY
+    RECOMMENDED; CONSIDERATION AT NEXT STATED COUNCIL MEETING, HEARING HELD,
+    HEARING NOTICES SENT, Introduced, ...]
 
 
 If you know the GUID of the government that you'd like to access beforehand,
 you can pass it to the api on creation::
 
-    >>> api = Legistar('12345678-90AB-CDEF-1234-567890ABCDEF', gov_guid="12345678-90AB-CDEF-1234-567890ABCDEF")
+    >>> api = Legistar('12345678-90AB-CDEF-1234-567890ABCDEF',
+    ...                gov_guid="12345678-90AB-CDEF-1234-567890ABCDEF")
 
 The attributes available on an object are readily discoverable through
 introspection::
 
     >>> action = actions[0]
     >>> dir(action)
-    [..., 'active_tense_flag', 'e_number_flag', 'final_flag', 'guid', 'key', 'lock_flag', 'name', 'target_flag']
+    [..., 'active_tense_flag', 'e_number_flag', 'final_flag', 'guid', 'key',
+    'lock_flag', 'name', 'target_flag']
 
 You can also find the attributes from the object's string representation::
 
