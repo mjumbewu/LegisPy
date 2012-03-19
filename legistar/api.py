@@ -69,13 +69,8 @@ class Legistar (object):
         >>> api.use(governments[0])
         >>> api.actions()
         """
-        client = self.client
-        soapy_actions = client.service.ActionGetAll(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=self.gov_guid
-        )
-
-        return self._rinse(soapy_actions.Action)
+        soapy_actions = self._get_gov_data('ActionGetAll')
+        return self._rinse(soapy_actions.Action, models.Action)
 
 #  ActionGetHistoryActions
 #  ActionGetOne
@@ -99,14 +94,8 @@ class Legistar (object):
         >>> api.use(governments[0])
         >>> api.action('<action_id>')
         """
-        client = self.client
-        soapy_action = client.service.ActionGetOne(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=self._gov_guid,
-            ActionID=action_id
-        )
-
-        return self._rinse(soapy_action)
+        soapy_action = self._get_gov_data('ActionGetOne', ActionID=action_id)
+        return self._rinse(soapy_action, models.Action)
 
 #  ActionGetProceduralActions
 #  ActionTextGetAll
@@ -116,32 +105,8 @@ class Legistar (object):
 #  (AgendaDefinitionUpdateOne)
 #  (AttachmentDeleteOne)
 #  AttachmentGetAll
-    def attachments(self, meeting_item):
-        """
-        TODO: Test this after I get to meeting items.
-        """
-        soapy_attachments = self.client.service.AttachmentGetAll(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=self.gov_guid,
-            MeetingItemGUID=self._get_guid('MeetingItem', meeting_item)
-        )
-
-        return self._rinse(soapy_attachments)
-
 #  AttachmentGetAllWithOptions
 #  AttachmentGetOneByName
-    def attachment(self, attachment_name):
-        """
-        TODO: Test this after I get to meeting items.
-        """
-        soapy_attachment = self.client.service.AttachmentGetOneByName(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=self.gov_guid,
-            AttachmentName=attachment_name
-        )
-
-        return self._rinse(soapy_attachments)
-
 #  (AttachmentUpdateOne)
 #  AttendanceTypeGetAll
     def attendance_types(self):
@@ -158,12 +123,8 @@ class Legistar (object):
         - AttendanceTypeSort  (numeric string)
 
         """
-        soapy_attendance = self.client.service.AttendanceTypeGetAll(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=self.gov_guid,
-        )
-
-        return self._rinse(soapy_attendance.AttendanceType)
+        soapy_types = self._get_gov_data('AttendanceTypeGetAll')
+        return self._rinse(soapy_types.AttendanceType, models.AttendanceType)
 
 #  BodyGetAll
 #  BodyGetAllThatMeet
@@ -180,7 +141,6 @@ class Legistar (object):
         - BodyOLSUsed  (boolean)
         """
         soapy_bodies = self._get_gov_data('BodyGetAll', opts_name='BodyOptions')
-
         return self._rinse(soapy_bodies.Body, proxy=models.Body)
 
 #  BodyGetCommitteeAll
@@ -208,6 +168,10 @@ class Legistar (object):
 #  GetCurrentCultureDateTimeFormatLongDatePattern
 #  GetCurrentCultureDateTimeFormatShortDatePattern
 #  GetCurrentCultureName
+    def culture(self):
+        """Get the currently set culture string (language and locale)."""
+        soapy_culture = self._get_data('GetCurrentCultureName')
+        return soapy_culture
 
 #  GetDataSet
 
@@ -218,6 +182,9 @@ class Legistar (object):
 #  GetValue
 
 #  GetVersion
+    def version(self):
+        soapy_version = self.client.service.GetVersion()
+        return soapy_version
 
 #  GovernmentGetAll
     def governments(self):
@@ -232,30 +199,12 @@ class Legistar (object):
         >>> api = Legistar(api_key='...')
         >>> api.governments()
         """
-        soapy_governments = self.client.service.GovernmentGetAll(
-            PartnerGUID=self.api_key
-        )
-
+        soapy_governments = self._get_data('GovernmentGetAll')
         return self._rinse(soapy_governments.Government)
 
 #  GovernmentGetExtraInfo
 #  GovernmentGetGUIDFromHostName
 #  GovernmentGetOne
-    def government(self, gov_guid=None):
-        """
-        Get a government based on the guid.
-
-        """
-        if gov_guid is None:
-            gov_guid = self.gov_guid
-
-        soapy_government = self.client.service.GovernmentGetOne(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=gov_guid
-        )
-
-        return self._rinse(soapy_government)
-
 #  GovernmentGetSetting
 #  (GovernmentUpdateOne)
 
@@ -268,6 +217,10 @@ class Legistar (object):
 #  IndexCategoryGetAll
 #  (IndexDeleteOne)
 #  IndexGetAll
+    def indexes(self):
+        soapy_indexes = self._get_gov_data('IndexGetAll', opts_name='IndexOptions')
+        return self._rinse(soapy_indexes.Index, models.Index)
+
 #  IndexGetAllByItemKey
 #  IndexGetOne
 #  (IndexUpdateOne)
@@ -487,12 +440,12 @@ class Legistar (object):
         return soapy_data
 
     def _rinse(self, soapy_obj, proxy=models.SoapyObjectProxy):
-        try:
+        if isinstance(soapy_obj, list):
             soapy_list = soapy_obj or []
             return [proxy(self, soapy_elem)
                     for soapy_elem in soapy_list]
-        except TypeError:
-            return soapy_obj
+        else:
+            return proxy(self, soapy_obj)
 
     def __download_wsdl(self):
         url = 'http://betasdk.legistar.com/main.asmx?WSDL'
