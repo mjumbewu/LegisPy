@@ -43,13 +43,13 @@ class Legistar (object):
         return self._gov_guid
 
     def use(self, government):
-        self._gov_guid = self._get_guid('Government', government)
+        self._gov_guid = self._get_guid(government)
 
-    def _get_guid(self, obj_type, obj):
+    def _get_guid(self, obj):
         if isinstance(obj, basestring):
             return obj
         else:
-            return getattr(obj, obj_type + 'GUID')
+            return obj.guid
 
     def using(self, government):
         api = Legistar(self.api_key, self.wsdl_url)
@@ -200,7 +200,7 @@ class Legistar (object):
         >>> api.governments()
         """
         soapy_governments = self._get_data('GovernmentGetAll')
-        return self._rinse(soapy_governments.Government)
+        return self._rinse(soapy_governments.Government, models.Government)
 
 #  GovernmentGetExtraInfo
 #  GovernmentGetGUIDFromHostName

@@ -47,5 +47,9 @@ class Body (SoapyObjectProxy):
         return self._api._rinse(soapy_meetings.Meeting)
 
 
+class Government (SoapyObjectProxy):
+    pass
+
+
 class Index (SoapyObjectProxy):
     pass
