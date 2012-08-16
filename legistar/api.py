@@ -64,20 +64,6 @@ class Legistar (object):
         parameter may either be a government id string or a government object
         returned from the Legistar.governments method.
 
-        >>> api = Legistar(api_key='...')
-        >>> governments = api.governments()
-        >>> api.use(governments[0])
-        >>> api.actions()
-        """
-        soapy_actions = self._get_gov_data('ActionGetAll')
-        return self._rinse(soapy_actions.Action, models.Action)
-
-#  ActionGetHistoryActions
-#  ActionGetOne
-    def action(self, action_id):
-        """
-        Get the action specified by the given ID.
-
         Action
         ------
         - ActionKey  (numeric string)
@@ -92,22 +78,37 @@ class Legistar (object):
         >>> api = Legistar(api_key='...')
         >>> governments = api.governments()
         >>> api.use(governments[0])
-        >>> api.action('<action_id>')
+        >>> api.actions()
         """
-        soapy_action = self._get_gov_data('ActionGetOne', ActionID=action_id)
-        return self._rinse(soapy_action, models.Action)
+        soapy_actions = self._get_gov_data('ActionGetAll')
+        return self._rinse(soapy_actions.Action, models.Action)
 
-#  ActionGetProceduralActions
 #  ActionTextGetAll
-#  ActionTextGetOne
-#  (ActionUpdateOne)
-#  AgendaDefinitionGetAll
-#  (AgendaDefinitionUpdateOne)
-#  (AttachmentDeleteOne)
-#  AttachmentGetAll
-#  AttachmentGetAllWithOptions
-#  AttachmentGetOneByName
+    def action_text(self):
+        """
+        Get the MadLib-like text snippets for different action types.
+
+        ActionText
+        ----------
+        ActionTextGUID = "F7B15003-244A-4AB6-B55C-7829CD162CB6"
+        ActionTextName = "CONSENT ROLLCALL"
+        ActionTextResultFailedText = "failed"
+        ActionTextVoteConsentRollCall = " by consent roll call"
+        ActionTextNoVoteStartPhrase = "This [FILE_TYPE] was"
+        ActionTextNoVoteActionName = " [ACTION_NAME]"
+        ActionTextNoVoteReferred = "to the [TARGET_BODY]"
+        ActionTextNoVoteDueDate = "due back on [DUE_DATE]"
+        ActionTextVoteStartPhrase = "This"
+        ActionTextVoteFileType = " that this [FILE_TYPE] be [ACTION_NAME] "
+        ActionTextVoteReference = " to the [TARGET_BODY] "
+        ActionTextVoteDueDate = " due back on [DUE_DATE]"
+
+        """
+        soapy_text = self._get_gov_data('ActionTextGetAll')
+        return self._rinse(soapy_text.ActionText, models.ActionText)
+
 #  (AttachmentUpdateOne)
+
 #  AttendanceTypeGetAll
     def attendance_types(self):
         """
@@ -127,8 +128,6 @@ class Legistar (object):
         return self._rinse(soapy_types.AttendanceType, models.AttendanceType)
 
 #  BodyGetAll
-#  BodyGetAllThatMeet
-#  BodyGetAllWithMeetings
     def bodies(self):
         """
         Get a list of all the bodies.
@@ -140,51 +139,54 @@ class Legistar (object):
         - BodyTypeSort  (number)
         - BodyOLSUsed  (boolean)
         """
-        soapy_bodies = self._get_gov_data('BodyGetAll', opts_name='BodyOptions')
+        soapy_bodies = self._get_gov_data('BodyGetAll')
         return self._rinse(soapy_bodies.Body, proxy=models.Body)
 
-#  BodyGetCommitteeAll
-#  BodyGetHistoryActionBodyAll
-#  BodyGetHistoryTargetBodyAll
-#  BodyGetNextMeetingDate
+#  BodyGetAllThatMeet
+    def bodies_that_meet(self):
+        """
+        Get a list of all the bodies that have meetings(?).
+        NOTE: All I ever get is an empty list.
+        """
+        soapy_bodies = self._get_gov_data('BodyGetAllThatMeet')
+        return self._rinse(soapy_bodies.Body, proxy=models.Body)
+
+#  BodyGetAllWithMeetings
+    def bodies_with_meetings(self):
+        """
+        Get a list of all the bodies that have upcoming meetings(?).
+        """
+        soapy_bodies = self._get_gov_data('BodyGetAllWithMeetings')
+        return self._rinse(soapy_bodies.Body, proxy=models.Body)
+
 #  BodyGetOne
-#  BodyHeaderGetAll
-#  BodyHeaderUpdateOne
-#  BodyTypeGetAll
-#  BodyTypeGetOneByBodyID
-#  BodyTypeUpdateOne
-#  BodyUpdateOne
-
-#  CodeSectionGetAll
-#  CodeSectionGetAllByItemKey
-#  CodeSectionGetOne
-#  CodeSectionUpdateOne
-
-#  DynamicDataDeleteByRecordID
-#  DynamicDataGetAll
-#  DynamicDataGetAllNoCache
-#  DynamicDataUpdateCollection
-
-#  GetCurrentCultureDateTimeFormatLongDatePattern
-#  GetCurrentCultureDateTimeFormatShortDatePattern
-#  GetCurrentCultureName
-    def culture(self):
-        """Get the currently set culture string (language and locale)."""
-        soapy_culture = self._get_data('GetCurrentCultureName')
-        return soapy_culture
-
-#  GetDataSet
+    def body(self, guid):
+        soapy_body = self._get_gov_data('BodyGetOne', BodyGUID=guid)
+        return self._rinse(soapy_body, proxy=models.Body)
 
 #  GetDateTime
+    def datetime(self):
+        """
+        Get the date and time on the server.
+        """
+        soapy_dt = self._get_data('GetDateTime')
+        return self._rinse(soapy_dt)
 
 #  GetServerName
-
-#  GetValue
+    def server_name(self):
+        """
+        Get the name of the server
+        """
+        soapy_name = self._get_data('GetServerName')
+        return self._rinse(soapy_name)
 
 #  GetVersion
     def version(self):
-        soapy_version = self.client.service.GetVersion()
-        return soapy_version
+        """
+        Get the version of the API
+        """
+        soapy_version = self._get_data('GetVersion')
+        return self._rinse(soapy_version)
 
 #  GovernmentGetAll
     def governments(self):
@@ -202,78 +204,57 @@ class Legistar (object):
         soapy_governments = self._get_data('GovernmentGetAll')
         return self._rinse(soapy_governments.Government, models.Government)
 
-#  GovernmentGetExtraInfo
-#  GovernmentGetGUIDFromHostName
 #  GovernmentGetOne
+    def government(self, guid):
+        """
+        Get the government that corresponds to the given GUID.
+        """
+        soapy_government = self._get_data('GovernmentGetOne', GovernmentGUID=guid)
+        return self._rinse(soapy_government, models.Government)
+
 #  GovernmentGetSetting
-#  (GovernmentUpdateOne)
 
-#  HelpGetAll
-#  HelpGetOne
-#  (HelpUpdateOne)
-
-#  HistoryRecordsByVoteType
-
-#  IndexCategoryGetAll
-#  (IndexDeleteOne)
-#  IndexGetAll
-    def indexes(self):
-        soapy_indexes = self._get_gov_data('IndexGetAll', opts_name='IndexOptions')
-        return self._rinse(soapy_indexes.Index, models.Index)
-
-#  IndexGetAllByItemKey
-#  IndexGetOne
-#  (IndexUpdateOne)
-
-#  ItemCodeSectionUpdate
-#  ItemCreateMany
-#  ItemExtraInfoGetOne
-#  ItemExtraInfoUpdateOne
-#  ItemGetNextENNumber
 #  ItemGetNextNumber
+    def next_item_number(self, type_guid):
+        """
+        Given an item-type id ...
+        NOTE: Not sure what exactly this gives you.
+        """
+        soapy_number = self._get_gov_data('ItemGetNextNumber', TypeGUID=type_guid)
+        return self._rinse(soapy_number)
+
 #  ItemGetOne
-#  ItemGetOneByFileID
+    def item(self, fileid, guid):
+        soapy_item = self._get_gov_data('ItemGetOne', ItemID=fileid, ItemGUID=guid)
+        return self._rinse(soapy_item, proxy=models.Item)
+
 #  ItemGetYears
-#  ItemHistoryCreate
-#  ItemHistoryReferralsGetAll
-#  ItemIncrementNumber
-#  ItemIndexDelete
-#  ItemIndexExtraUpdate
-#  ItemIndexGetAllByItemKey
-#  ItemIndexGetOne
-#  ItemIndexUpdate
-#  ItemIndexUpdateOne
+    def item_years(self):
+        soapy_years = self._get_gov_data('ItemGetYears')
+        return [unicode(i.item_year) for i in self._rinse(soapy_years.Item)]
+
+#  (ItemIncrementNumber)
 #  ItemSearch
     def items(self):
         crit = ''
-        soapy_items = self._get_gov_data('ItemSearch', ItemSearchCriteria=crit)
+        soapy_items = self._get_gov_data('ItemSearch', ItemSearchCriteria=crit) #, ItemSearchCriteria=dict(SearchText='streets', ItemDate='', ItemTypeGUID='', IncludeName=True, IncludeTitle=True, IncludeItemsWithFinalActionDate=True))
+        return self._rinse(soapy_items.Item, proxy=models.Item)
 
-        return self._rinse(soapy_items)
-
-#  ItemSponsorsCreate
-#  ItemSponsorsGetAll
-#  ItemStatusFromValidAction
-#  ItemStatusFromValidActionNoStatus
-#  ItemStatusGetAll
-#  ItemStatusGetOne
-#  ItemStatusUpdateOne
 #  ItemTypeGetAll
-#  ItemTypeGetOne
-#  ItemTypeUpdateOne
-#  ItemUpdateOne
+    def item_types(self):
+        soapy_item_types = self._get_gov_data('ItemTypeGetAll')
+        return self._rinse(soapy_item_types.ItemType)
 
-#  LanguageTranslationGetAll
-#  LanguageTranslationGetOne
-#  LanguageTranslationGetOneByName
-#  LanguageTranslationUpdateOne
-
-#  LookUpGetAllByType
+#  (ItemUpdateOne)
 
 #  MeetingAcceptData
-#  MeetingGetAllForBody
-#  MeetingGetAllVoters
+#  MeetingGetAllForBody (see Body.meetings)
 #  MeetingGetOne
-#  MeetingGetProgress
+    def meeting(self, guid):
+        soapy_meeting = self._get_gov_data('MeetingGetOne', MeetingGUID=guid)
+        return self._rinse(soapy_meeting, proxy=models.Meeting)
+
+#  MeetingGetProgress (see Meeting.progress)
 #  MeetingGetYears
     def meeting_years(self):
         """
@@ -284,23 +265,20 @@ class Legistar (object):
         - MeetingYear
 
         """
-        soapy_meeting_years = self.client.service.MeetingGetYears(
-            PartnerGUID=self.api_key,
-            GovernmentGUID=self.gov_guid
-        )
-
-        return self._rinse(soapy_meeting_years.Meeting)
+        soapy_meeting_years = self._get_gov_data('MeetingGetYears')
+        return [unicode(m.meeting_year)
+                for m in self._rinse(soapy_meeting_years.Meeting)]
 
 #  MeetingItemCreateRelationships
 #  MeetingItemDelete
 #  MeetingItemDeleteRelationships
 #  MeetingItemDuplicate
 #    Duplicates an item for the purpose of recording multiple actions.
-#  MeetingItemGetAll
+#  MeetingItemGetAll (see Meeting.items)
 #  MeetingItemGetAllForOutline
 #  MeetingItemGetAllWithVotes
-#  MeetingItemGetAllWithoutNotes
-#  MeetingItemGetAttendance
+#  MeetingItemGetAllWithoutNotes (see Meeting.items_without_notes)
+#  MeetingItemGetAttendance (see Meeting.attendance)
 #  MeetingItemGetNotes
 #  MeetingItemGetOne
 #  MeetingItemGetOneByID
@@ -376,6 +354,10 @@ class Legistar (object):
 #  SystemTextGetAll
 #  SystemTextUpdateOne
 #  TextGetOne
+    def text(self, fileid, version=None):
+        soapy_text = self._get_gov_data('TextGetOne', ItemID=fileid, ItemVersion=version)
+        return self._rinse(soapy_text)
+
 #  TextGetOneGUID
 #  TextUpdateOne
 #  ValidActionGetAll
@@ -403,8 +385,14 @@ class Legistar (object):
 
     def _get_gov_data(self, command_name, opts_name=None, options=None, **kwargs):
         """
-        Construct a SOAP request that requires a GovernmentGUID.
+        Construct a SOAP request that requires a GovernmentGUID.  Shorthand for:
 
+            client.service.<command_name>(
+                PartnerGUID=self.api_key,
+                GovernmentGUID=self.gov_guid,
+                Options|<opts_name>=<options>,
+                **kwargs
+            )
         """
         return self._get_data(
             command_name,
@@ -432,6 +420,14 @@ class Legistar (object):
         else:
             kwargs['Options'] = options
 
+        kwargs_copy = kwargs.copy()
+        for soap_opt_name, soap_opt_kwargs in kwargs_copy.items():
+            if isinstance(soap_opt_kwargs, dict):
+                soap_obj = self.client.factory.create(soap_opt_name)
+                for key, val in soap_opt_kwargs.items():
+                    setattr(soap_obj, key, val)
+                kwargs[soap_opt_name] = soap_obj
+
         soapy_data = getattr(self.client.service, command_name)(
             PartnerGUID=self.api_key,
             **kwargs
@@ -440,10 +436,17 @@ class Legistar (object):
         return soapy_data
 
     def _rinse(self, soapy_obj, proxy=models.SoapyObjectProxy):
-        if isinstance(soapy_obj, list):
+        if soapy_obj is None:
+            return
+
+        elif isinstance(soapy_obj, list):
             soapy_list = soapy_obj or []
             return [proxy(self, soapy_elem)
                     for soapy_elem in soapy_list]
+
+        elif isinstance(soapy_obj, suds.sax.text.Text):
+            return unicode(soapy_obj)
+
         else:
             return proxy(self, soapy_obj)
 

@@ -37,6 +37,10 @@ class Action (SoapyObjectProxy):
     pass
 
 
+class ActionText (SoapyObjectProxy):
+    pass
+
+
 class AttendanceType (SoapyObjectProxy):
     pass
 
@@ -44,12 +48,34 @@ class AttendanceType (SoapyObjectProxy):
 class Body (SoapyObjectProxy):
     def meetings(self):
         soapy_meetings = self._api._get_gov_data('MeetingGetAllForBody', BodyGUID=self.guid)
-        return self._api._rinse(soapy_meetings.Meeting)
+        return self._api._rinse(soapy_meetings.Meeting, proxy=Meeting)
+
+    def next_meeting_date(self):
+        soapy_date = self._api._get_gov_data('BodyGetNextMeetingDate', BodyGUID=self.guid)
+        return self._api._rinse(soapy_date)
 
 
 class Government (SoapyObjectProxy):
     pass
 
 
-class Index (SoapyObjectProxy):
+class Item (SoapyObjectProxy):
     pass
+
+
+class Meeting (SoapyObjectProxy):
+    def progress(self):
+        soapy_progress = self._api._get_gov_data('MeetingGetProgress', MeetingGUID=self.guid)
+        return self._api._rinse(soapy_progress)
+
+    def items(self):
+        soapy_items = self._api._get_gov_data('MeetingItemGetAll', MeetingGUID=self.guid)
+        return self._api._rinse(soapy_items.MeetingItem)
+
+    def items_without_notes(self):
+        soapy_items = self._api._get_gov_data('MeetingItemGetAllWithoutNotes', MeetingGUID=self.guid)
+        return self._api._rinse(soapy_items.Item, proxy=Item)
+
+    def attendance(self):
+        soapy_attendance = self._api._get_gov_data('MeetingItemGetAttendance', MeetingGUID=self.guid)
+        return self._api._rinse(soapy_attendance)
