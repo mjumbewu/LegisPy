@@ -1,12 +1,11 @@
-It is totally 3:24 AM and I am at SXSW lacking some essential facilities, but I
-am going to start getting this pumped out before the morning.
-
 =======
 LegisPy
 =======
 
-*LegisPy* is a friendly wrapper around the SOAP API for Granicus' Legistar
-leegislation management system.
+*LegisPy* aims to be a friendly wrapper around the SOAP API for Granicus'
+Legistar legislation management system, the description of which is available
+at http://sdk.legistar.com/main.asmx (the `betasdk` branch is for
+http://betasdk.legistar.com/main.asmx).
 
 Inspired by the API work of @zachwills, a talented developer and a friend.
 
@@ -16,9 +15,23 @@ Inspired by the API work of @zachwills, a talented developer and a friend.
 Getting Started
 ===============
 
-The first thing you need to get started with this API is an API key.  Getting one of those is easy.  Contact `Granicus <http://www.granicus.com/form/Contact.html>`_ and let them know you're interested in working with their data.
+The first thing you need to get started with this API is an API key. You'll have
+to get permission to access your city's or county's data. I think this is
+because there's no separation between the read and write API (though there
+should be). Contact Granicus to get information on how to get access to your
+city's data. Getting one of those may involve a few steps:
 
-After you have an API key, you'll have to get permission to access your city's or county's data.  I think this is because there's no separation between the read and write API (though there should be).  Contact Granicus to get information on how to get access to your city's data.  Tell them I sent you ;-).  And, while you're at it, tell them to separate read and write APIs.
+* Contacting someone at your local clerk's office and asking for permission
+* Asking someone on your local council or legislative body (see the LETTERS.rst
+  file)
+* Contacting Granicus_ through their site, or through the dev-list_, and
+  forwarding along a statement of permission (they're nice guys). And, while
+  you're at it, tell them to separate read and write APIs so that all of this
+  isn't necessary.
+
+.. _Granicus: http://www.granicus.com/form/Contact.html
+.. _dev-list: https://groups.google.com/forum/?fromgroups#!forum/granicus-developers
+
 
 Usage
 =====
