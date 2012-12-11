@@ -308,7 +308,7 @@ class Legistar (object):
             MeetingSearchCriteria=criteria
         )
 
-        return self._rinse(soapy_meetings)
+        return self._rinse(soapy_meetings.Meeting, proxy=models.Meeting)
 
 #  MeetingSearchWithSecurity
 #  MeetingStatusGetAll
@@ -407,6 +407,8 @@ class Legistar (object):
         Construct a SOAP request that requires a GovernmentGUID.
 
         """
+        kwargs_copy = kwargs.copy()
+
         if opts_name is not None:
             opts = self.client.factory.create(opts_name)
 
@@ -420,7 +422,6 @@ class Legistar (object):
         else:
             kwargs['Options'] = options
 
-        kwargs_copy = kwargs.copy()
         for soap_opt_name, soap_opt_kwargs in kwargs_copy.items():
             if isinstance(soap_opt_kwargs, dict):
                 soap_obj = self.client.factory.create(soap_opt_name)

@@ -72,9 +72,14 @@ class Meeting (SoapyObjectProxy):
         soapy_items = self._api._get_gov_data('MeetingItemGetAll', MeetingGUID=self.guid)
         return self._api._rinse(soapy_items.MeetingItem)
 
+    def items_with_votes(self):
+        soapy_items = self._api._get_gov_data('MeetingItemGetAllWithVotes', MeetingGUID=self.guid,
+            options={'UseVote2': False, 'Language': 'LanguageAll', 'FormatGUID': 'No'})
+        return self._api._rinse(soapy_items.MeetingItem, proxy=Item)
+
     def items_without_notes(self):
         soapy_items = self._api._get_gov_data('MeetingItemGetAllWithoutNotes', MeetingGUID=self.guid)
-        return self._api._rinse(soapy_items.Item, proxy=Item)
+        return self._api._rinse(soapy_items.MeetingItem, proxy=Item)
 
     def attendance(self):
         soapy_attendance = self._api._get_gov_data('MeetingItemGetAttendance', MeetingGUID=self.guid)
